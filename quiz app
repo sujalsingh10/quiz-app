@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/questionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Question will appear here"
+        android:textSize="20sp"
+        android:padding="10dp" />
+
+    <RadioGroup
+        android:id="@+id/optionsGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <RadioButton android:id="@+id/option1" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <RadioButton android:id="@+id/option2" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <RadioButton android:id="@+id/option3" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <RadioButton android:id="@+id/option4" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit Answer"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp"
+        android:marginTop="20dp" />
+</LinearLayout>
+package com.example.quizapp;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private TextView questionTextView;
+    private RadioGroup optionsGroup;
+    private RadioButton option1, option2, option3, option4;
+    private Button submitButton;
+
+    private String[] questions = {
+            "What is the capital of France?",
+            "Which language is used for Android development?",
+            "What is 2 + 2?"
+    };
+
+    private String[][] options = {
+            {"Berlin", "Madrid", "Paris", "Rome"},
+            {"Python", "Java", "Swift", "Kotlin"},
+            {"3", "4", "5", "6"}
+    };
+
+    private int[] correctAnswers = {2, 1, 1}; // Index of correct answer in options array
+    private int currentQuestionIndex = 0;
+    private int score = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        questionTextView = findViewById(R.id.questionTextView);
+        optionsGroup = findViewById(R.id.optionsGroup);
+        option1 = findViewById(R.id.option1);
+        option2 = findViewById(R.id.option2);
+        option3 = findViewById(R.id.option3);
+        option4 = findViewById(R.id.option4);
+        submitButton = findViewById(R.id.submitButton);
+
+        loadQuestion();
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkAnswer();
+            }
+        });
+    }
+
+    private void loadQuestion() {
+        if (currentQuestionIndex < questions.length) {
+            questionTextView.setText(questions[currentQuestionIndex]);
+            option1.setText(options[currentQuestionIndex][0]);
+            option2.setText(options[currentQuestionIndex][1]);
+            option3.setText(options[currentQuestionIndex][2]);
+            option4.setText(options[currentQuestionIndex][3]);
+            optionsGroup.clearCheck(); // Clear previous selection
+        } else {
+            Toast.makeText(this, "Quiz Finished! Your Score: " + score, Toast.LENGTH_LONG).show();
+            submitButton.setEnabled(false);
+        }
+    }
+
+    private void checkAnswer() {
+        int selectedId = optionsGroup.getCheckedRadioButtonId();
+        if (selectedId == -1) {
+            Toast.makeText(this, "Please select an answer!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        RadioButton selectedRadioButton = findViewById(selectedId);
+        int selectedIndex = optionsGroup.indexOfChild(selectedRadioButton);
+
+        if (selectedIndex == correctAnswers[currentQuestionIndex]) {
+            score++;
+            Toast.makeText(this, "Correct!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Wrong!", Toast.LENGTH_SHORT).show();
+        }
+
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+}
